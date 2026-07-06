@@ -12,6 +12,7 @@ C = {
     "ik": os.environ["IMA_OPENAPI_APIKEY"],
     "kb": "y1LoQE689w8Sf8kc7guV7nF7fLbFYGfAWU03rs0UCns=",
     "fd": "folder_7479894850170829",
+    "fd2": "folder_7479922402550248",
 }
 SF = "sync_state.json"
 
@@ -70,9 +71,11 @@ def up(title, content, ds):
         "Authorization": auth, "x-cos-security-token": cred["token"]})
     resp = conn.getresponse(); resp.read(); conn.close()
     if resp.status >= 300: print(f"  X COS上传失败"); os.remove(tp); return False
+    # 觉察日记→专属文件夹，其他→我的get笔记
+    folder = C["fd"] if "觉察日记" in title else C["fd2"]
     r2 = ima("openapi/wiki/v1/add_knowledge", {
-        "media_type": 13, "media_id": mid, "title": title,
-        "knowledge_base_id": C["kb"], "folder_id": C["fd"]})
+    "media_type": 13, "media_id": mid, "title": title,
+    "knowledge_base_id": C["kb"], "folder_id": folder})
     os.remove(tp)
     if r2.get("code") == 0: print(f"  V 导入成功: {title}"); return True
     print(f"  X add_knowledge失败"); return False
