@@ -13,11 +13,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - env:
+      - name: 同步觉察日记
+        env:
           GETNOTE_CLIENT_ID: ${{ secrets.GETNOTE_CLIENT_ID }}
           GETNOTE_API_KEY: ${{ secrets.GETNOTE_API_KEY }}
           IMA_OPENAPI_CLIENTID: ${{ secrets.IMA_OPENAPI_CLIENTID }}
           IMA_OPENAPI_APIKEY: ${{ secrets.IMA_OPENAPI_APIKEY }}
-        run: |
-          curl -O https://raw.githubusercontent.com/你的名字/getnote-to-ima/main/sync_getnote_to_ima.py
-          python sync_getnote_to_ima.py
+        run: python sync_getnote_to_ima.py
