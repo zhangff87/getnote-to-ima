@@ -52,7 +52,7 @@ def up(title, content, ds):
     if r.get("code") != 0: print(f"  X create_media失败"); os.remove(tp); return False
     mid, cred = r["data"]["media_id"], r["data"]["cos_credential"]
     with open(tp, "rb") as f: fc = f.read()
-    host = f"{cred['bucket']}.cos.{cred['region']}.myqcloud.com"
+     host = f"{cred['bucket_name']}.cos.{cred['region']}.myqcloud.com"
     pth = f"/{cred['cos_key']}"
     st, et = str(int(time.time())), str(int(time.time()) + 3600)
     kt = f"{st};{et}"
