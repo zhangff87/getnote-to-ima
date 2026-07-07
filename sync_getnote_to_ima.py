@@ -45,14 +45,15 @@ def up(title, content, ds):
     with open(tp, "w", encoding="utf-8") as f:
         f.write(f"# {title}\n\n日期：{ds}\n来源：get笔记\n\n---\n\n{content}")
     fs = os.path.getsize(tp)
+    folder = C["fd"] if "觉察日记" in title else C["fd2"]
     r = ima("openapi/wiki/v1/create_media", {
         "media_type": 13, "file_name": fn, "file_size": fs,
         "content_type": "text/plain", "knowledge_base_id": C["kb"],
-        "file_ext": "txt", "folder_id": C["fd"]})
+        "file_ext": "txt", "folder_id": folder})
     if r.get("code") != 0: print(f"  X create_media失败"); os.remove(tp); return False
     mid, cred = r["data"]["media_id"], r["data"]["cos_credential"]
     with open(tp, "rb") as f: fc = f.read()
-     host = f"{cred['bucket_name']}.cos.{cred['region']}.myqcloud.com"
+    host = f"{cred['bucket_name']}.cos.{cred['region']}.myqcloud.com"
     pth = f"/{cred['cos_key']}"
     st, et = str(int(time.time())), str(int(time.time()) + 3600)
     kt = f"{st};{et}"
@@ -70,12 +71,10 @@ def up(title, content, ds):
         "Content-Type": "text/plain", "Content-Length": hdrs["content-length"],
         "Authorization": auth, "x-cos-security-token": cred["token"]})
     resp = conn.getresponse(); resp.read(); conn.close()
-    if resp.status >= 300: print(f"  X COS上传失败"); os.remove(tp); return False
-    # 觉察日记→专属文件夹，其他→我的get笔记
-    folder = C["fd"] if "觉察日记" in title else C["fd2"]
+    if resp.status >= 300: print(f"  X COS上传失败 (HTTP {resp.status})"); os.remove(tp); return False
     r2 = ima("openapi/wiki/v1/add_knowledge", {
-    "media_type": 13, "media_id": mid, "title": title,
-    "knowledge_base_id": C["kb"], "folder_id": folder})
+        "media_type": 13, "media_id": mid, "title": title,
+        "knowledge_base_id": C["kb"], "folder_id": folder})
     os.remove(tp)
     if r2.get("code") == 0: print(f"  V 导入成功: {title}"); return True
     print(f"  X add_knowledge失败"); return False
