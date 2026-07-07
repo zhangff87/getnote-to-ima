@@ -19,7 +19,7 @@ jobs:
           GETNOTE_API_KEY: ${{ secrets.GETNOTE_API_KEY }}
           IMA_OPENAPI_CLIENTID: ${{ secrets.IMA_OPENAPI_CLIENTID }}
           IMA_OPENAPI_APIKEY: ${{ secrets.IMA_OPENAPI_APIKEY }}
-      run: python sync_getnote_to_ima.py
+        run: python sync_getnote_to_ima.py
       - name: 保存同步状态
         run: |
           git config user.name "sync-bot"
